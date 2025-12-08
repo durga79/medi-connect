@@ -35,12 +35,17 @@ export default async function DoctorDashboard() {
     },
   })
 
-  const totalPatients = await prisma.medicalRecord.count({
+  const uniquePatients = await prisma.medicalRecord.findMany({
     where: {
       doctorId: session.profileId,
     },
+    select: {
+      patientId: true,
+    },
     distinct: ['patientId'],
   })
+  
+  const totalPatients = uniquePatients.length
 
   const recentRecords = await prisma.medicalRecord.findMany({
     where: {
