@@ -2,7 +2,8 @@ import { getSession } from '@/lib/utils/session'
 import { prescriptionService } from '@/lib/services/prescription.service'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Pill, User, Calendar, Plus } from 'lucide-react'
+import { DeleteButton } from '@/components/DeleteButton'
+import { Pill, User, Calendar, Plus, Edit } from 'lucide-react'
 import Link from 'next/link'
 
 export default async function DoctorPrescriptionsPage() {
@@ -55,6 +56,24 @@ export default async function DoctorPrescriptionsPage() {
                           <Calendar className="h-4 w-4" />
                           <span>{new Date(prescription.createdAt).toLocaleDateString()}</span>
                         </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          asChild
+                          className="text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50"
+                        >
+                          <Link href={`/doctor/prescriptions/${prescription.id}/edit`}>
+                            <Edit className="h-4 w-4 mr-1" />
+                            Edit
+                          </Link>
+                        </Button>
+                        <DeleteButton
+                          id={prescription.id}
+                          endpoint="/api/prescriptions"
+                          itemName="prescription"
+                        />
                       </div>
                     </div>
 

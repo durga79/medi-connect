@@ -2,7 +2,8 @@ import { getSession } from '@/lib/utils/session'
 import { medicalRecordService } from '@/lib/services/medical-record.service'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { FileText, User, Calendar, Plus } from 'lucide-react'
+import { DeleteButton } from '@/components/DeleteButton'
+import { FileText, User, Calendar, Plus, Edit } from 'lucide-react'
 import Link from 'next/link'
 
 export default async function DoctorMedicalRecordsPage() {
@@ -59,6 +60,24 @@ export default async function DoctorMedicalRecordsPage() {
                             day: 'numeric'
                           })}</span>
                         </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          asChild
+                          className="text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50"
+                        >
+                          <Link href={`/doctor/medical-records/${record.id}/edit`}>
+                            <Edit className="h-4 w-4 mr-1" />
+                            Edit
+                          </Link>
+                        </Button>
+                        <DeleteButton
+                          id={record.id}
+                          endpoint="/api/medical-records"
+                          itemName="medical record"
+                        />
                       </div>
                     </div>
 
