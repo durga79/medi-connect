@@ -1,5 +1,7 @@
 import { getSession } from '@/lib/utils/session'
 import { prisma } from '@/lib/prisma'
+import { Button } from '@/components/ui/button'
+import { Plus } from 'lucide-react'
 import Link from 'next/link'
 
 export default async function PatientDashboard() {
@@ -55,13 +57,21 @@ export default async function PatientDashboard() {
 
   return (
     <div className="px-4 py-6 sm:px-0">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">
-          Welcome, {patient?.firstName}!
-        </h1>
-        <p className="mt-2 text-gray-600">
-          Manage your health records and appointments
-        </p>
+      <div className="mb-8 flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">
+            Welcome, {patient?.firstName}!
+          </h1>
+          <p className="mt-2 text-gray-600">
+            Manage your health records and appointments
+          </p>
+        </div>
+        <Button asChild size="lg">
+          <Link href="/patient/appointments/book">
+            <Plus className="h-4 w-4 mr-2" />
+            Book Appointment
+          </Link>
+        </Button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">

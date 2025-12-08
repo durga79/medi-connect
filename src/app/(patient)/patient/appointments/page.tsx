@@ -1,7 +1,9 @@
 import { getSession } from '@/lib/utils/session'
 import { appointmentService } from '@/lib/services/appointment.service'
 import { Card, CardContent } from '@/components/ui/card'
-import { Calendar, Clock, User, Stethoscope } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Calendar, Clock, User, Stethoscope, Plus } from 'lucide-react'
+import Link from 'next/link'
 
 export default async function PatientAppointmentsPage() {
   const session = await getSession()
@@ -14,9 +16,17 @@ export default async function PatientAppointmentsPage() {
 
   return (
     <div className="px-4 py-6 sm:px-0">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">My Appointments</h1>
-        <p className="mt-2 text-gray-600">View and manage your appointments</p>
+      <div className="mb-8 flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">My Appointments</h1>
+          <p className="mt-2 text-gray-600">View and manage your appointments</p>
+        </div>
+        <Button asChild>
+          <Link href="/patient/appointments/book">
+            <Plus className="h-4 w-4 mr-2" />
+            Book Appointment
+          </Link>
+        </Button>
       </div>
 
       <div className="space-y-8">
