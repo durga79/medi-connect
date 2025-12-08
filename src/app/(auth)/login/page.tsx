@@ -3,6 +3,11 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Activity, Heart, Shield } from 'lucide-react'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -42,97 +47,156 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8 bg-white p-10 rounded-xl shadow-lg">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            MediConnect Portal
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            Sign in to your account
+    <div className="min-h-screen flex">
+      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-indigo-600 via-indigo-700 to-indigo-800 p-12 flex-col justify-between relative overflow-hidden">
+        <div className="absolute inset-0 bg-grid-white/[0.05] bg-[size:20px_20px]" />
+        
+        <div className="relative z-10">
+          <div className="flex items-center gap-3 mb-8">
+            <div className="p-2 bg-white/10 backdrop-blur-sm rounded-lg">
+              <Heart className="h-8 w-8 text-white" />
+            </div>
+            <span className="text-2xl font-bold text-white">MediConnect</span>
+          </div>
+          
+          <h1 className="text-4xl font-bold text-white mb-4 leading-tight">
+            Healthcare Management
+            <br />
+            Made Simple
+          </h1>
+          <p className="text-indigo-100 text-lg">
+            Secure, efficient, and comprehensive patient care platform
           </p>
         </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          {error && (
-            <div className="rounded-md bg-red-50 p-4">
-              <div className="text-sm text-red-800">{error}</div>
-            </div>
-          )}
-          <div className="rounded-md shadow-sm -space-y-px">
-            <div>
-              <label htmlFor="email" className="sr-only">
-                Email address
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="Email address"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
+
+        <div className="relative z-10 grid grid-cols-1 gap-6">
+          <div className="flex items-start gap-4">
+            <div className="p-3 bg-white/10 backdrop-blur-sm rounded-lg">
+              <Shield className="h-6 w-6 text-white" />
             </div>
             <div>
-              <label htmlFor="password" className="sr-only">
-                Password
-              </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                autoComplete="current-password"
-                required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
+              <h3 className="text-white font-semibold mb-1">Enterprise Security</h3>
+              <p className="text-indigo-100 text-sm">Bank-level encryption and HIPAA compliance</p>
+            </div>
+          </div>
+          <div className="flex items-start gap-4">
+            <div className="p-3 bg-white/10 backdrop-blur-sm rounded-lg">
+              <Activity className="h-6 w-6 text-white" />
+            </div>
+            <div>
+              <h3 className="text-white font-semibold mb-1">Real-time Updates</h3>
+              <p className="text-indigo-100 text-sm">Instant access to medical records and appointments</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="relative z-10 text-indigo-200 text-sm">
+          © 2024 MediConnect. All rights reserved.
+        </div>
+      </div>
+
+      <div className="flex-1 flex items-center justify-center p-8 bg-gray-50">
+        <div className="w-full max-w-md">
+          <div className="lg:hidden mb-8 text-center">
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <Heart className="h-8 w-8 text-indigo-600" />
+              <span className="text-2xl font-bold text-gray-900">MediConnect</span>
             </div>
           </div>
 
-          <div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
-            >
-              {loading ? 'Signing in...' : 'Sign in'}
-            </button>
-          </div>
+          <Card className="border-0 shadow-xl">
+            <CardHeader className="space-y-1 pb-6">
+              <CardTitle className="text-2xl font-bold text-center">Welcome back</CardTitle>
+              <CardDescription className="text-center">
+                Enter your credentials to access your account
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                {error && (
+                  <div className="rounded-lg bg-red-50 border border-red-200 p-3">
+                    <div className="text-sm text-red-800">{error}</div>
+                  </div>
+                )}
+                
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email address</Label>
+                  <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    autoComplete="email"
+                    required
+                    placeholder="name@example.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                </div>
 
-          <div className="text-center">
-            <p className="text-sm text-gray-600">
-              Don&apos;t have an account?{' '}
-              <Link
-                href="/register"
-                className="font-medium text-indigo-600 hover:text-indigo-500"
-              >
-                Register here
-              </Link>
-            </p>
-          </div>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="password">Password</Label>
+                    <Link
+                      href="#"
+                      className="text-sm text-indigo-600 hover:text-indigo-500 font-medium"
+                    >
+                      Forgot password?
+                    </Link>
+                  </div>
+                  <Input
+                    id="password"
+                    name="password"
+                    type="password"
+                    autoComplete="current-password"
+                    required
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                </div>
 
-          <div className="mt-6 border-t pt-6">
-            <p className="text-xs text-gray-500 text-center mb-4">
-              Demo Credentials:
-            </p>
-            <div className="grid grid-cols-2 gap-4 text-xs">
-              <div className="bg-blue-50 p-3 rounded">
-                <p className="font-semibold text-blue-900">Patient</p>
-                <p className="text-blue-700">patient@demo.com</p>
-                <p className="text-blue-700">Patient@123</p>
-              </div>
-              <div className="bg-green-50 p-3 rounded">
-                <p className="font-semibold text-green-900">Doctor</p>
-                <p className="text-green-700">doctor@demo.com</p>
-                <p className="text-green-700">Doctor@123</p>
-              </div>
-            </div>
-          </div>
-        </form>
+                <Button
+                  type="submit"
+                  className="w-full"
+                  disabled={loading}
+                >
+                  {loading ? 'Signing in...' : 'Sign in'}
+                </Button>
+
+                <div className="relative my-6">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-gray-200" />
+                  </div>
+                  <div className="relative flex justify-center text-sm">
+                    <span className="bg-white px-4 text-gray-500">New to MediConnect?</span>
+                  </div>
+                </div>
+
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full"
+                  asChild
+                >
+                  <Link href="/register">
+                    Create an account
+                  </Link>
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+
+          <p className="mt-8 text-center text-sm text-gray-600">
+            By continuing, you agree to our{' '}
+            <Link href="#" className="text-indigo-600 hover:text-indigo-500 font-medium">
+              Terms of Service
+            </Link>{' '}
+            and{' '}
+            <Link href="#" className="text-indigo-600 hover:text-indigo-500 font-medium">
+              Privacy Policy
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   )
