@@ -1,235 +1,120 @@
-# MediConnect Patient Portal
+# MediConnect - Secure Patient Portal
 
-A secure healthcare patient portal web application built with Next.js and PostgreSQL.
+## 📋 Project Title and Overview
+**MediConnect** is a secure, enterprise-level healthcare web application designed to facilitate communication between doctors and patients. It allows patients to manage their medical records, appointments, and prescriptions, while enabling doctors to provide care and manage patient information securely.
 
-## 🏥 Project Overview
+**Main Security Focus:** The application is built with a "Security First" approach, implementing robust authentication, role-based access control (RBAC), data encryption, and input validation to protect sensitive medical data (PHI).
 
-MediConnect is a healthcare patient portal that allows patients to manage their medical records, appointments, and prescriptions, while enabling doctors to provide care and manage patient information securely.
+## 🚀 Features and Security Objectives
 
-## 🎯 Features
+### Core Functionalities
+- **User Authentication:** Secure login and registration for patients.
+- **Role-Based Dashboards:** Distinct interfaces and capabilities for Doctors and Patients.
+- **Medical Records Management:** Doctors can create/edit records; Patients can view them.
+- **Prescription Management:** Digital prescription creation and tracking.
+- **File Management:** Secure uploading and downloading of medical reports/documents.
+- **PDF Generation:** Patients can download official records as formatted PDFs.
+- **Profile Management:** Secure password changing and profile updates.
 
-### Patient Features
-- View and manage appointments
-- Access medical records and history
-- View prescriptions
-- View test results
-- Update profile information
+### Key Security Improvements
+1. **Authentication & Authorization:**
+   - **Bcrypt Hashing:** Passwords are never stored in plain text.
+   - **JWT Sessions:** Secure, HTTP-only cookies for session management (prevents XSS).
+   - **RBAC:** Strict middleware checks ensure Patients cannot access Doctor routes and vice-versa.
 
-### Doctor Features
-- View assigned patients
-- Manage patient medical records
-- Create and manage prescriptions
-- Upload test results
-- Schedule and manage appointments
-- Add medical notes
+2. **Data Protection:**
+   - **Input Validation:** All user inputs are validated using `Zod` schemas to prevent malformed data and injection attacks.
+   - **SQL Injection Prevention:** Uses Prisma ORM which parameterizes queries by default.
+   - **XSS Protection:** React's automatic escaping prevents Cross-Site Scripting.
 
-## 🔒 Security Improvements
+3. **Secure Configuration:**
+   - Environment variables for sensitive secrets (Database URLs, JWT Secrets).
+   - Protected API endpoints that verify session and role before execution.
 
-This application implements comprehensive security measures including:
-
-1. **Authentication & Authorization**
-   - Secure password hashing using bcrypt
-   - JWT-based session management
-   - Role-based access control (RBAC)
-
-2. **Input Validation & Sanitization**
-   - Server-side validation using Zod
-   - XSS prevention through input sanitization
-   - SQL injection prevention via Prisma ORM
-
-3. **Data Protection**
-   - Encrypted sensitive data
-   - HTTPS enforcement
-   - Secure session handling
-
-4. **Access Control**
-   - Patients can only access their own data
-   - Doctors can only access assigned patients
-   - IDOR prevention mechanisms
-
-5. **Session Management**
-   - Secure JWT tokens
-   - Session timeout implementation
-   - CSRF protection
-
-6. **Audit Logging**
-   - Comprehensive logging of sensitive operations
-   - IP tracking and user agent logging
-   - Timestamp tracking for all activities
-
-7. **Error Handling**
-   - Secure error messages (no sensitive info leakage)
-   - Rate limiting on authentication endpoints
-   - Proper error logging
-
-## 🛠️ Tech Stack
-
-- **Frontend**: Next.js 14 (App Router), React, TypeScript, Tailwind CSS
-- **Backend**: Next.js API Routes, Server Actions
-- **Database**: PostgreSQL
-- **ORM**: Prisma
-- **Authentication**: JWT, bcrypt
-- **Validation**: Zod
-
-## 📁 Project Structure
+## 📂 Project Structure
 
 ```
-mediconnect-portal/
-├── src/
-│   ├── app/                    # Next.js app router pages
-│   │   ├── (auth)/            # Authentication pages
-│   │   ├── (patient)/         # Patient dashboard pages
-│   │   ├── (doctor)/          # Doctor dashboard pages
-│   │   └── api/               # API routes
-│   ├── components/            # Reusable React components
-│   ├── lib/                   # Utilities and services
-│   │   ├── services/          # Business logic
-│   │   ├── repositories/      # Data access layer
-│   │   ├── validations/       # Zod schemas
-│   │   └── utils/             # Helper functions
-│   └── types/                 # TypeScript type definitions
-├── prisma/
-│   ├── schema.prisma          # Database schema
-│   └── seed.ts                # Database seeding
-├── tests/                     # Test files
-└── docs/                      # Documentation
+/src
+  /app              # Next.js App Router (Pages & API Routes)
+    /(auth)         # Public auth pages (Login/Register)
+    /(doctor)       # Protected Doctor Dashboard & Features
+    /(patient)      # Protected Patient Dashboard & Features
+    /api            # Backend API Endpoints (Secure)
+  /components       # Reusable UI Components (Forms, Cards, Modals)
+  /lib
+    /prisma.ts      # Database Client
+    /services       # Business Logic Layer (Separation of Concerns)
+    /utils          # Helper functions (Auth, Session, PDF, File)
+    /validations    # Zod Security Schemas (Input Validation)
+  /types            # TypeScript Definitions
+/prisma             # Database Schema & Migrations
+/public             # Static assets & Secure File Storage
 ```
 
-## 🚀 Getting Started
+## 🛠 Setup and Installation Instructions
 
 ### Prerequisites
+- Node.js (v18+)
+- PostgreSQL (Local or Cloud like Neon/Supabase)
 
-- Node.js >= 18.0.0
-- pnpm >= 8.0.0
-- PostgreSQL >= 14
+### Installation Steps
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd mediconnect-portal
+   ```
 
-### Installation
+2. **Install Dependencies**
+   ```bash
+   npm install
+   # OR
+   pnpm install
+   ```
 
-1. Clone the repository:
-```bash
-git clone <repository-url>
-cd mediconnect-portal
-```
+3. **Configure Environment**
+   Create a `.env` file in the root directory:
+   ```env
+   DATABASE_URL="postgresql://user:password@localhost:5432/mediconnect"
+   JWT_SECRET="your-super-secure-secret-key-min-32-chars"
+   ```
 
-2. Install dependencies:
-```bash
-pnpm install
-```
+4. **Setup Database**
+   ```bash
+   npx prisma generate
+   npx prisma db push
+   npx prisma db seed  # Creates initial admin/doctor accounts
+   ```
 
-3. Set up environment variables:
-```bash
-cp .env.example .env
-```
+5. **Run the Application**
+   ```bash
+   npm run dev
+   ```
+   Access the app at `http://localhost:3000`
 
-Edit `.env` and configure your database connection and JWT secret.
+## 📖 Usage Guidelines
 
-4. Set up the database:
-```bash
-pnpm db:generate
-pnpm db:push
-pnpm db:seed
-```
+### 1. Doctor Access
+- **Login:** Use the seeded doctor credentials (e.g., `doctor@demo.com` / `Doctor@123`).
+- **Dashboard:** Create new patients, view appointments, and manage medical records.
+- **Creating Records:** Go to "Medical Records" -> "Create". You can upload PDF/Image files.
+- **Admin:** Doctors can create new Doctor/Patient accounts via the Dashboard action buttons.
 
-5. Run the development server:
-```bash
-pnpm dev
-```
+### 2. Patient Access
+- **Register:** Use the public registration page (Note: Only Patient registration is public).
+- **Dashboard:** View your own medical history, upcoming appointments, and prescriptions.
+- **Downloads:** Click the "Download PDF" button on any record to get a copy.
 
-6. Open [http://localhost:3000](http://localhost:3000) in your browser.
+## 🧪 Testing Process
+The application underwent rigorous testing including:
+- **Unit Testing:** Jest tests for utility functions and validations.
+- **Security Testing:** Verified RBAC by attempting to access Doctor routes as a Patient (blocked).
+- **Input Fuzzing:** Tested forms with invalid data to ensure Zod validation catches errors.
+- **Manual QA:** End-to-end testing of the Patient-Doctor workflow.
 
-## 🧪 Testing
-
-### Running Tests
-```bash
-pnpm test
-```
-
-### Running Tests in Watch Mode
-```bash
-pnpm test:watch
-```
-
-### Security Testing
-
-This project includes:
-- **Functional Testing**: Testing core features and workflows
-- **SAST (Static Application Security Testing)**: Code analysis for vulnerabilities
-- **Manual Security Testing**: SQL injection, XSS, CSRF, IDOR testing
-
-Detailed testing documentation can be found in `/docs/testing.md`.
-
-## 📊 Database Schema
-
-The application uses the following main entities:
-- **Users**: Authentication and role management
-- **Patients**: Patient profiles and information
-- **Doctors**: Doctor profiles and specializations
-- **Appointments**: Scheduling and appointment management
-- **Medical_Records**: Patient medical history
-- **Prescriptions**: Medication prescriptions
-- **Test_Results**: Lab and diagnostic results
-- **Audit_Logs**: Security audit trail
-
-## 🔐 Security Features Implementation
-
-### Phase 1: Intentionally Vulnerable (Base Code)
-The initial implementation contains deliberate security vulnerabilities including:
-- Weak authentication
-- Missing input validation
-- SQL injection vulnerabilities
-- No CSRF protection
-- Weak session management
-
-### Phase 2: Security Hardening (Current State)
-All identified vulnerabilities have been addressed with:
-- Secure authentication and authorization
-- Comprehensive input validation
-- Protection against common web vulnerabilities
-- Audit logging and monitoring
-- Secure session management
-
-See `/docs/security-improvements.md` for detailed documentation.
-
-## 📝 Default Credentials (Development Only)
-
-### Patient Account
-- Email: `patient@demo.com`
-- Password: `Patient@123`
-
-### Doctor Account
-- Email: `doctor@demo.com`
-- Password: `Doctor@123`
-
-**⚠️ Change these credentials in production!**
-
-## 🤝 Contributing
-
-This is an individual academic project. Contributions are not accepted.
-
-## 📄 License
-
-This project is created for educational purposes as part of a university assignment.
-
-## 👨‍💻 Author
-
-[Your Name]  
-Student ID: [Your Student ID]  
-Institution: [Your Institution]
-
-## 🔗 Links
-
-- **GitHub Repository**: [Repository URL]
-- **Video Presentation**: [YouTube URL]
-- **Live Demo**: [Deployment URL]
-
-## 📚 References
-
-1. OWASP Top 10 Web Application Security Risks
-2. Next.js Security Best Practices
-3. HIPAA Security Guidelines
-4. Prisma Security Documentation
-
----
-
-**Note**: This application is developed as part of an academic project focusing on secure web application development. It demonstrates the implementation of security best practices throughout the software development lifecycle.
-
+## 📚 Contributions and References
+- **Framework:** Next.js 14
+- **Database:** PostgreSQL & Prisma ORM
+- **Styling:** Tailwind CSS
+- **Security:** Bcrypt, Jose (JWT), Zod
+- **Utils:** jsPDF (PDF Generation)
+# medi-connect
