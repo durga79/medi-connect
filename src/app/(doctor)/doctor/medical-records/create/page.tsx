@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import { FileText, ArrowLeft, User, Upload, X } from 'lucide-react'
+import { FileText, ArrowLeft, User } from 'lucide-react'
 import Link from 'next/link'
 
 interface Patient {
@@ -25,7 +25,6 @@ export default function CreateMedicalRecordPage() {
   const [patients, setPatients] = useState<Patient[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [uploadedFile, setUploadedFile] = useState<File | null>(null)
   const [formData, setFormData] = useState({
     patientId: '',
     diagnosis: '',
@@ -56,33 +55,15 @@ export default function CreateMedicalRecordPage() {
     setLoading(true)
 
     try {
-      console.log('Submitting form...')
-      console.log('Uploaded file:', uploadedFile)
-      
-      // Always use FormData to support file uploads
-      const submitFormData = new FormData()
-      submitFormData.append('patientId', formData.patientId)
-      submitFormData.append('diagnosis', formData.diagnosis)
-      submitFormData.append('symptoms', formData.symptoms)
-      
-      if (formData.notes) {
-        submitFormData.append('notes', formData.notes)
-      }
-      
-      // Add file if present
-      if (uploadedFile) {
-        console.log('Adding file to FormData:', uploadedFile.name)
-        submitFormData.append('file', uploadedFile)
-      }
-
-      console.log('Sending request...')
       const response = await fetch('/api/medical-records', {
         method: 'POST',
-        body: submitFormData,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
       })
 
       const data = await response.json()
-      console.log('Response:', data)
 
       if (!data.success) {
         setError(data.error || 'Failed to create medical record')
@@ -104,12 +85,6 @@ export default function CreateMedicalRecordPage() {
       ...formData,
       [e.target.name]: e.target.value,
     })
-  }
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setUploadedFile(e.target.files[0])
-    }
   }
 
   const selectedPatient = patients.find(p => p.id === formData.patientId)
@@ -224,59 +199,6 @@ export default function CreateMedicalRecordPage() {
                 placeholder="Treatment plan, recommendations, follow-up instructions..."
                 className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-600 focus-visible:ring-offset-2 resize-none"
               />
-            </div>
-
-            {/* File Upload - INSIDE FORM */}
-            <div className="space-y-2 pt-4 border-t border-gray-200">
-              <div className="flex items-center gap-2 mb-2">
-                <Upload className="h-5 w-5 text-purple-600" />
-                <Label>Upload Test Results / Reports (Optional)</Label>
-              </div>
-              <p className="text-sm text-gray-500 mb-3">Upload lab reports, X-rays, or other medical documents</p>
-              
-              <div className="flex items-center justify-center w-full">
-                <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
-                  <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                    {uploadedFile ? (
-                      <>
-                        <FileText className="w-10 h-10 mb-3 text-green-600" />
-                        <p className="mb-2 text-sm text-gray-700">
-                          <span className="font-semibold">{uploadedFile.name}</span>
-                        </p>
-                        <p className="text-xs text-gray-500">
-                          {(uploadedFile.size / 1024).toFixed(2)} KB
-                        </p>
-                      </>
-                    ) : (
-                      <>
-                        <Upload className="w-10 h-10 mb-3 text-gray-400" />
-                        <p className="mb-2 text-sm text-gray-500">
-                          <span className="font-semibold">Click to upload</span> or drag and drop
-                        </p>
-                        <p className="text-xs text-gray-500">PDF, PNG, JPG, DICOM (MAX. 10MB)</p>
-                      </>
-                    )}
-                  </div>
-                  <input
-                    type="file"
-                    className="hidden"
-                    accept=".pdf,.png,.jpg,.jpeg,.dicom"
-                    onChange={handleFileChange}
-                  />
-                </label>
-              </div>
-              {uploadedFile && (
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setUploadedFile(null)}
-                  className="w-full text-red-600 hover:text-red-700"
-                >
-                  <X className="h-4 w-4 mr-2" />
-                  Remove File
-                </Button>
-              )}
             </div>
 
             {/* Submit - INSIDE FORM */}

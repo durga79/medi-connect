@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import { Pill, ArrowLeft, User, Plus, X, Upload, FileText } from 'lucide-react'
+import { Pill, ArrowLeft, User, Plus, X } from 'lucide-react'
 import Link from 'next/link'
 
 interface Patient {
@@ -35,7 +35,6 @@ export default function CreatePrescriptionPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [patientId, setPatientId] = useState('')
-  const [uploadedFile, setUploadedFile] = useState<File | null>(null)
   const [medications, setMedications] = useState<Medication[]>([
     {
       id: '1',
@@ -90,12 +89,6 @@ export default function CreatePrescriptionPage() {
         med.id === id ? { ...med, [field]: value } : med
       )
     )
-  }
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setUploadedFile(e.target.files[0])
-    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -395,9 +388,6 @@ export default function CreatePrescriptionPage() {
                 </Button>
               )}
             </div>
-          </CardContent>
-        </Card>
-
         <div className="flex gap-3 pt-4">
           <Button
             type="submit"
