@@ -65,10 +65,13 @@ export default async function DoctorLayout({
                 </Link>
               </div>
             </div>
-            <div className="flex items-center">
-              <span className="text-sm text-gray-700 mr-4">
+            <div className="flex items-center gap-4">
+              <Link
+                href="/doctor/profile"
+                className="text-sm text-gray-700 hover:text-gray-900"
+              >
                 Dr. {session.firstName} {session.lastName}
-              </span>
+              </Link>
               <form action={logout}>
                 <button
                   type="submit"
@@ -85,4 +88,5 @@ export default async function DoctorLayout({
     </div>
   )
 }
+
 

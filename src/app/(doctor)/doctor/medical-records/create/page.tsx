@@ -56,15 +56,33 @@ export default function CreateMedicalRecordPage() {
     setLoading(true)
 
     try {
+      console.log('Submitting form...')
+      console.log('Uploaded file:', uploadedFile)
+      
+      // Always use FormData to support file uploads
+      const submitFormData = new FormData()
+      submitFormData.append('patientId', formData.patientId)
+      submitFormData.append('diagnosis', formData.diagnosis)
+      submitFormData.append('symptoms', formData.symptoms)
+      
+      if (formData.notes) {
+        submitFormData.append('notes', formData.notes)
+      }
+      
+      // Add file if present
+      if (uploadedFile) {
+        console.log('Adding file to FormData:', uploadedFile.name)
+        submitFormData.append('file', uploadedFile)
+      }
+
+      console.log('Sending request...')
       const response = await fetch('/api/medical-records', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
+        body: submitFormData,
       })
 
       const data = await response.json()
+      console.log('Response:', data)
 
       if (!data.success) {
         setError(data.error || 'Failed to create medical record')
@@ -75,6 +93,7 @@ export default function CreateMedicalRecordPage() {
       router.push('/doctor/medical-records')
       router.refresh()
     } catch (err) {
+      console.error('Error:', err)
       setError('An error occurred. Please try again.')
       setLoading(false)
     }
@@ -206,75 +225,62 @@ export default function CreateMedicalRecordPage() {
                 className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-600 focus-visible:ring-offset-2 resize-none"
               />
             </div>
-          </form>
-        </CardContent>
-      </Card>
 
-      <Card className="shadow-lg">
-        <CardHeader>
-          <div className="flex items-center gap-3">
-            <div className="h-12 w-12 rounded-lg bg-purple-100 flex items-center justify-center">
-              <Upload className="h-6 w-6 text-purple-600" />
+            {/* File Upload - INSIDE FORM */}
+            <div className="space-y-2 pt-4 border-t border-gray-200">
+              <div className="flex items-center gap-2 mb-2">
+                <Upload className="h-5 w-5 text-purple-600" />
+                <Label>Upload Test Results / Reports (Optional)</Label>
+              </div>
+              <p className="text-sm text-gray-500 mb-3">Upload lab reports, X-rays, or other medical documents</p>
+              
+              <div className="flex items-center justify-center w-full">
+                <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                  <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                    {uploadedFile ? (
+                      <>
+                        <FileText className="w-10 h-10 mb-3 text-green-600" />
+                        <p className="mb-2 text-sm text-gray-700">
+                          <span className="font-semibold">{uploadedFile.name}</span>
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          {(uploadedFile.size / 1024).toFixed(2)} KB
+                        </p>
+                      </>
+                    ) : (
+                      <>
+                        <Upload className="w-10 h-10 mb-3 text-gray-400" />
+                        <p className="mb-2 text-sm text-gray-500">
+                          <span className="font-semibold">Click to upload</span> or drag and drop
+                        </p>
+                        <p className="text-xs text-gray-500">PDF, PNG, JPG, DICOM (MAX. 10MB)</p>
+                      </>
+                    )}
+                  </div>
+                  <input
+                    type="file"
+                    className="hidden"
+                    accept=".pdf,.png,.jpg,.jpeg,.dicom"
+                    onChange={handleFileChange}
+                  />
+                </label>
+              </div>
+              {uploadedFile && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setUploadedFile(null)}
+                  className="w-full text-red-600 hover:text-red-700"
+                >
+                  <X className="h-4 w-4 mr-2" />
+                  Remove File
+                </Button>
+              )}
             </div>
-            <div>
-              <CardTitle>Upload Test Results / Reports (Optional)</CardTitle>
-              <CardDescription>Upload lab reports, X-rays, or other medical documents</CardDescription>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div className="flex items-center justify-center w-full">
-              <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
-                <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                  {uploadedFile ? (
-                    <>
-                      <FileText className="w-10 h-10 mb-3 text-green-600" />
-                      <p className="mb-2 text-sm text-gray-700">
-                        <span className="font-semibold">{uploadedFile.name}</span>
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        {(uploadedFile.size / 1024).toFixed(2)} KB
-                      </p>
-                    </>
-                  ) : (
-                    <>
-                      <Upload className="w-10 h-10 mb-3 text-gray-400" />
-                      <p className="mb-2 text-sm text-gray-500">
-                        <span className="font-semibold">Click to upload</span> or drag and drop
-                      </p>
-                      <p className="text-xs text-gray-500">PDF, PNG, JPG, DICOM (MAX. 10MB)</p>
-                    </>
-                  )}
-                </div>
-                <input
-                  type="file"
-                  className="hidden"
-                  accept=".pdf,.png,.jpg,.jpeg,.dicom"
-                  onChange={handleFileChange}
-                />
-              </label>
-            </div>
-            {uploadedFile && (
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={() => setUploadedFile(null)}
-                className="w-full text-red-600 hover:text-red-700"
-              >
-                <X className="h-4 w-4 mr-2" />
-                Remove File
-              </Button>
-            )}
-          </div>
-        </CardContent>
-      </Card>
 
-      <Card className="shadow-lg">
-        <CardContent className="pt-6">
-          <form onSubmit={handleSubmit}>
-            <div className="flex gap-3 pt-4">
+            {/* Submit - INSIDE FORM */}
+            <div className="flex gap-3 pt-6 border-t border-gray-200">
               <Button
                 type="submit"
                 className="flex-1"

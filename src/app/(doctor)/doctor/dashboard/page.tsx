@@ -1,6 +1,7 @@
 import { getSession } from '@/lib/utils/session'
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
+import DoctorDashboardClient from './DoctorDashboardClient'
 
 export default async function DoctorDashboard() {
   const session = await getSession()
@@ -75,6 +76,8 @@ export default async function DoctorDashboard() {
           {doctor?.specialization} - {doctor?.department}
         </p>
       </div>
+
+      <DoctorDashboardClient />
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div className="bg-white overflow-hidden shadow rounded-lg">

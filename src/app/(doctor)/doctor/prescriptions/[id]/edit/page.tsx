@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import { Pill, ArrowLeft } from 'lucide-react'
+import { Pill, ArrowLeft, Upload, X, Download, FileText } from 'lucide-react'
 import Link from 'next/link'
 
 export default function EditPrescriptionPage({ params }: { params: { id: string } }) {
@@ -22,6 +22,8 @@ export default function EditPrescriptionPage({ params }: { params: { id: string 
     instructions: '',
   })
   const [patientName, setPatientName] = useState('')
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null)
+  const [existingFileUrl, setExistingFileUrl] = useState<string | null>(null)
 
   useEffect(() => {
     fetchPrescription()
@@ -41,6 +43,11 @@ export default function EditPrescriptionPage({ params }: { params: { id: string 
           instructions: data.data.instructions || '',
         })
         setPatientName(`${data.data.patient.firstName} ${data.data.patient.lastName}`)
+        
+        // Load existing file if present
+        if (data.data.fileUrl) {
+          setExistingFileUrl(data.data.fileUrl)
+        }
       } else {
         setError(data.error || 'Failed to fetch prescription')
       }
@@ -86,6 +93,16 @@ export default function EditPrescriptionPage({ params }: { params: { id: string 
       ...formData,
       [e.target.name]: e.target.value,
     })
+  }
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setUploadedFile(e.target.files[0])
+    }
+  }
+
+  const handleDeleteExistingFile = () => {
+    setExistingFileUrl(null)
   }
 
   if (fetchLoading) {
@@ -214,6 +231,87 @@ export default function EditPrescriptionPage({ params }: { params: { id: string 
               />
             </div>
 
+            {/* Existing File Section */}
+            {existingFileUrl && (
+              <div className="space-y-2">
+                <Label>Current Prescription Document</Label>
+                <div className="flex items-center justify-between p-3 bg-indigo-50 rounded-lg border border-indigo-200">
+                  <div className="flex items-center gap-3">
+                    <FileText className="h-5 w-5 text-indigo-600" />
+                    <span className="text-sm font-medium text-indigo-900">Prescription Document</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <a
+                      href={existingFileUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="p-2 hover:bg-indigo-100 rounded-md transition-colors"
+                    >
+                      <Download className="h-4 w-4 text-indigo-600" />
+                    </a>
+                    <button
+                      type="button"
+                      onClick={handleDeleteExistingFile}
+                      className="p-2 hover:bg-red-50 rounded-md transition-colors"
+                    >
+                      <X className="h-4 w-4 text-red-600" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Upload New File Section */}
+            <div className="space-y-2">
+              <Label>{existingFileUrl ? 'Replace with New File (Optional)' : 'Upload Prescription Document (Optional)'}</Label>
+              <div className="flex items-center justify-center w-full">
+                <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                  <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                    {uploadedFile ? (
+                      <>
+                        <FileText className="w-10 h-10 mb-3 text-green-600" />
+                        <p className="mb-2 text-sm text-gray-700">
+                          <span className="font-semibold">{uploadedFile.name}</span>
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          {(uploadedFile.size / 1024).toFixed(2)} KB
+                        </p>
+                      </>
+                    ) : (
+                      <>
+                        <Upload className="w-10 h-10 mb-3 text-gray-400" />
+                        <p className="mb-2 text-sm text-gray-500">
+                          <span className="font-semibold">Click to upload</span> or drag and drop
+                        </p>
+                        <p className="text-xs text-gray-500">PDF, PNG, JPG (MAX. 5MB)</p>
+                      </>
+                    )}
+                  </div>
+                  <input
+                    type="file"
+                    className="hidden"
+                    accept=".pdf,.png,.jpg,.jpeg"
+                    onChange={handleFileChange}
+                  />
+                </label>
+              </div>
+              {uploadedFile && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setUploadedFile(null)}
+                  className="w-full text-red-600 hover:text-red-700"
+                >
+                  <X className="h-4 w-4 mr-2" />
+                  Remove New File
+                </Button>
+              )}
+              <p className="text-xs text-gray-500 mt-2">
+                Note: File upload will be simulated. In production, files would be uploaded to cloud storage.
+              </p>
+            </div>
+
             <div className="flex gap-3 pt-4">
               <Button
                 type="submit"
@@ -236,4 +334,5 @@ export default function EditPrescriptionPage({ params }: { params: { id: string 
     </div>
   )
 }
+
 

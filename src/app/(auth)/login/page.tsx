@@ -60,12 +60,12 @@ export default function LoginPage() {
           </div>
           
           <h1 className="text-4xl font-bold text-white mb-4 leading-tight">
-            Healthcare Management
+            Your Health,
             <br />
-            Made Simple
+            Our Priority
           </h1>
           <p className="text-indigo-100 text-lg">
-            Secure, efficient, and comprehensive patient care platform
+            Connect with healthcare professionals and manage your medical records seamlessly
           </p>
         </div>
 
@@ -75,8 +75,8 @@ export default function LoginPage() {
               <Shield className="h-6 w-6 text-white" />
             </div>
             <div>
-              <h3 className="text-white font-semibold mb-1">Enterprise Security</h3>
-              <p className="text-indigo-100 text-sm">Bank-level encryption and HIPAA compliance</p>
+              <h3 className="text-white font-semibold mb-1">Secure & Private</h3>
+              <p className="text-indigo-100 text-sm">Your medical data is protected with advanced security</p>
             </div>
           </div>
           <div className="flex items-start gap-4">
@@ -84,14 +84,14 @@ export default function LoginPage() {
               <Activity className="h-6 w-6 text-white" />
             </div>
             <div>
-              <h3 className="text-white font-semibold mb-1">Real-time Updates</h3>
-              <p className="text-indigo-100 text-sm">Instant access to medical records and appointments</p>
+              <h3 className="text-white font-semibold mb-1">Easy Access</h3>
+              <p className="text-indigo-100 text-sm">View appointments, prescriptions, and medical records anytime</p>
             </div>
           </div>
         </div>
 
         <div className="relative z-10 text-indigo-200 text-sm">
-          © 2024 MediConnect. All rights reserved.
+          © 2025 MediConnect. All rights reserved.
         </div>
       </div>
 

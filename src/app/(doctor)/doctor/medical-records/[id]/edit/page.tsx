@@ -6,8 +6,17 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import { FileText, ArrowLeft } from 'lucide-react'
+import { FileText, ArrowLeft, Upload, X, Download, File } from 'lucide-react'
 import Link from 'next/link'
+
+interface TestResult {
+  id: string
+  testName: string
+  testDate: string
+  fileUrl: string | null
+  resultValue: string
+  notes: string | null
+}
 
 export default function EditMedicalRecordPage({ params }: { params: { id: string } }) {
   const router = useRouter()
@@ -20,6 +29,9 @@ export default function EditMedicalRecordPage({ params }: { params: { id: string
     notes: '',
   })
   const [patientName, setPatientName] = useState('')
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null)
+  const [existingFiles, setExistingFiles] = useState<TestResult[]>([])
+  const [filesToDelete, setFilesToDelete] = useState<string[]>([])
 
   useEffect(() => {
     fetchRecord()
@@ -37,6 +49,11 @@ export default function EditMedicalRecordPage({ params }: { params: { id: string
           notes: data.data.notes || '',
         })
         setPatientName(`${data.data.patient.firstName} ${data.data.patient.lastName}`)
+        
+        // Load existing test results/files
+        if (data.data.testResults) {
+          setExistingFiles(data.data.testResults)
+        }
       } else {
         setError(data.error || 'Failed to fetch record')
       }
@@ -82,6 +99,17 @@ export default function EditMedicalRecordPage({ params }: { params: { id: string
       ...formData,
       [e.target.name]: e.target.value,
     })
+  }
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setUploadedFile(e.target.files[0])
+    }
+  }
+
+  const handleDeleteFile = (fileId: string) => {
+    setFilesToDelete([...filesToDelete, fileId])
+    setExistingFiles(existingFiles.filter(f => f.id !== fileId))
   }
 
   if (fetchLoading) {
@@ -163,6 +191,94 @@ export default function EditMedicalRecordPage({ params }: { params: { id: string
               />
             </div>
 
+            {/* Existing Files Section */}
+            {existingFiles.length > 0 && (
+              <div className="space-y-2">
+                <Label>Existing Files</Label>
+                <div className="space-y-2">
+                  {existingFiles.map((file) => file.fileUrl && (
+                    <div key={file.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200">
+                      <div className="flex items-center gap-3">
+                        <File className="h-5 w-5 text-indigo-600" />
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">{file.testName || 'Medical Document'}</p>
+                          <p className="text-xs text-gray-500">{new Date(file.testDate).toLocaleDateString()}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <a
+                          href={file.fileUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="p-2 hover:bg-gray-100 rounded-md transition-colors"
+                        >
+                          <Download className="h-4 w-4 text-gray-600" />
+                        </a>
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteFile(file.id)}
+                          className="p-2 hover:bg-red-50 rounded-md transition-colors"
+                        >
+                          <X className="h-4 w-4 text-red-600" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Upload New File Section */}
+            <div className="space-y-2">
+              <Label>Upload New File (Optional)</Label>
+              <div className="flex items-center justify-center w-full">
+                <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                  <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                    {uploadedFile ? (
+                      <>
+                        <FileText className="w-10 h-10 mb-3 text-green-600" />
+                        <p className="mb-2 text-sm text-gray-700">
+                          <span className="font-semibold">{uploadedFile.name}</span>
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          {(uploadedFile.size / 1024).toFixed(2)} KB
+                        </p>
+                      </>
+                    ) : (
+                      <>
+                        <Upload className="w-10 h-10 mb-3 text-gray-400" />
+                        <p className="mb-2 text-sm text-gray-500">
+                          <span className="font-semibold">Click to upload</span> or drag and drop
+                        </p>
+                        <p className="text-xs text-gray-500">PDF, PNG, JPG, DICOM (MAX. 10MB)</p>
+                      </>
+                    )}
+                  </div>
+                  <input
+                    type="file"
+                    className="hidden"
+                    accept=".pdf,.png,.jpg,.jpeg,.dicom"
+                    onChange={handleFileChange}
+                  />
+                </label>
+              </div>
+              {uploadedFile && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setUploadedFile(null)}
+                  className="w-full text-red-600 hover:text-red-700"
+                >
+                  <X className="h-4 w-4 mr-2" />
+                  Remove New File
+                </Button>
+              )}
+              <p className="text-xs text-gray-500 mt-2">
+                Note: File upload will be simulated. In production, files would be uploaded to cloud storage.
+              </p>
+            </div>
+
             <div className="flex gap-3 pt-4">
               <Button
                 type="submit"
@@ -185,4 +301,5 @@ export default function EditMedicalRecordPage({ params }: { params: { id: string
     </div>
   )
 }
+
 

@@ -49,6 +49,16 @@ export class MedicalRecordService {
             appointmentDate: true,
           },
         },
+        testResults: {
+          select: {
+            id: true,
+            testName: true,
+            testDate: true,
+            fileUrl: true,
+            resultValue: true,
+            notes: true,
+          },
+        },
       },
       orderBy: {
         createdAt: 'desc',
@@ -67,6 +77,16 @@ export class MedicalRecordService {
             firstName: true,
             lastName: true,
             dateOfBirth: true,
+          },
+        },
+        testResults: {
+          select: {
+            id: true,
+            testName: true,
+            testDate: true,
+            fileUrl: true,
+            resultValue: true,
+            notes: true,
           },
         },
       },
@@ -171,4 +191,5 @@ export class MedicalRecordService {
 }
 
 export const medicalRecordService = new MedicalRecordService()
+
 

@@ -3,7 +3,7 @@ import { medicalRecordService } from '@/lib/services/medical-record.service'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { DeleteButton } from '@/components/DeleteButton'
-import { FileText, User, Calendar, Plus, Edit } from 'lucide-react'
+import { FileText, User, Calendar, Plus, Edit, Download, File } from 'lucide-react'
 import Link from 'next/link'
 
 export default async function DoctorMedicalRecordsPage() {
@@ -96,6 +96,30 @@ export default async function DoctorMedicalRecordsPage() {
                         <div>
                           <span className="text-sm font-medium text-gray-700">Notes:</span>
                           <p className="mt-1 text-gray-600">{record.notes}</p>
+                        </div>
+                      )}
+
+                      {record.testResults && record.testResults.length > 0 && (
+                        <div className="pt-3 border-t border-gray-100">
+                          <span className="text-sm font-medium text-gray-700 block mb-2">Attached Files:</span>
+                          <div className="space-y-2">
+                            {record.testResults.map((test: any) => test.fileUrl && (
+                              <a
+                                key={test.id}
+                                href={test.fileUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-2 p-3 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors group"
+                              >
+                                <File className="h-5 w-5 text-indigo-600" />
+                                <div className="flex-1">
+                                  <p className="text-sm font-medium text-gray-900">{test.testName || 'Medical Document'}</p>
+                                  <p className="text-xs text-gray-500">{new Date(test.testDate).toLocaleDateString()}</p>
+                                </div>
+                                <Download className="h-4 w-4 text-gray-400 group-hover:text-indigo-600" />
+                              </a>
+                            ))}
+                          </div>
                         </div>
                       )}
                     </div>

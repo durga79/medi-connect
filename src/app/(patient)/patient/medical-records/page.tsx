@@ -1,13 +1,77 @@
-import { getSession } from '@/lib/utils/session'
-import { medicalRecordService } from '@/lib/services/medical-record.service'
+'use client'
+
+import { useEffect, useState } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
-import { FileText, User, Calendar } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { FileText, User, Calendar, Download, File } from 'lucide-react'
+import { downloadMedicalRecordPDF } from '@/lib/utils/pdf-generator'
 
-export default async function PatientMedicalRecordsPage() {
-  const session = await getSession()
-  if (!session) return null
+interface MedicalRecord {
+  id: string
+  diagnosis: string
+  symptoms: string
+  notes: string | null
+  createdAt: string
+  doctor: {
+    firstName: string
+    lastName: string
+    specialization: string
+  }
+  appointment: {
+    appointmentDate: string
+  } | null
+  testResults: Array<{
+    id: string
+    testName: string
+    testDate: string
+    fileUrl: string | null
+    resultValue: string
+    notes: string | null
+  }>
+}
 
-  const records = await medicalRecordService.getMedicalRecordsByPatient(session.profileId)
+export default function PatientMedicalRecordsPage() {
+  const [records, setRecords] = useState<MedicalRecord[]>([])
+  const [patientName, setPatientName] = useState('')
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    fetchRecords()
+  }, [])
+
+  const fetchRecords = async () => {
+    try {
+      const response = await fetch('/api/medical-records')
+      const data = await response.json()
+      
+      if (data.success) {
+        setRecords(data.data)
+      }
+      
+      // Get patient name from session
+      const meResponse = await fetch('/api/auth/me')
+      const meData = await meResponse.json()
+      if (meData.success) {
+        setPatientName(`${meData.data.firstName} ${meData.data.lastName}`)
+      }
+    } catch (err) {
+      console.error('Failed to fetch records:', err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleDownload = (record: MedicalRecord) => {
+    downloadMedicalRecordPDF(record, patientName)
+  }
+
+  if (loading) {
+    return (
+      <div className="px-4 py-6 sm:px-0">
+        <p className="text-center text-gray-600">Loading...</p>
+      </div>
+    )
+  }
 
   return (
     <div className="px-4 py-6 sm:px-0">
@@ -51,6 +115,15 @@ export default async function PatientMedicalRecordsPage() {
                           })}</span>
                         </div>
                       </div>
+                      <Button
+                        onClick={() => handleDownload(record)}
+                        variant="outline"
+                        size="sm"
+                        className="flex items-center gap-2"
+                      >
+                        <Download className="h-4 w-4" />
+                        Download PDF
+                      </Button>
                     </div>
 
                     <div className="space-y-3">
@@ -76,6 +149,30 @@ export default async function PatientMedicalRecordsPage() {
                           Related to appointment on {new Date(record.appointment.appointmentDate).toLocaleDateString()}
                         </div>
                       )}
+
+                      {record.testResults && record.testResults.length > 0 && (
+                        <div className="pt-3 border-t border-gray-100">
+                          <span className="text-sm font-medium text-gray-700 block mb-2">Attached Files:</span>
+                          <div className="space-y-2">
+                            {record.testResults.map((test: any) => test.fileUrl && (
+                              <a
+                                key={test.id}
+                                href={test.fileUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-2 p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors group"
+                              >
+                                <File className="h-5 w-5 text-indigo-600" />
+                                <div className="flex-1">
+                                  <p className="text-sm font-medium text-gray-900">{test.testName || 'Medical Document'}</p>
+                                  <p className="text-xs text-gray-500">{new Date(test.testDate).toLocaleDateString()}</p>
+                                </div>
+                                <Download className="h-4 w-4 text-gray-400 group-hover:text-indigo-600" />
+                              </a>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -87,4 +184,5 @@ export default async function PatientMedicalRecordsPage() {
     </div>
   )
 }
+
 

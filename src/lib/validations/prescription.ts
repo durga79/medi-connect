@@ -21,3 +21,4 @@ export const updatePrescriptionSchema = z.object({
 export type CreatePrescriptionInput = z.infer<typeof createPrescriptionSchema>
 export type UpdatePrescriptionInput = z.infer<typeof updatePrescriptionSchema>
 
+

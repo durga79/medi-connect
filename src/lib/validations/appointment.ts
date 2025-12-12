@@ -20,3 +20,4 @@ export const updateAppointmentSchema = z.object({
 export type CreateAppointmentInput = z.infer<typeof createAppointmentSchema>
 export type UpdateAppointmentInput = z.infer<typeof updateAppointmentSchema>
 
+

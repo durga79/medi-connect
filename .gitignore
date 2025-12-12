@@ -17,3 +17,6 @@ coverage/
 .vercel/
 prisma/migrations/
 
+# Uploaded files (local storage)
+public/uploads/
+

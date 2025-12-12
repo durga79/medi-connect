@@ -7,13 +7,10 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Heart, UserCircle, Stethoscope } from 'lucide-react'
-
-type UserRole = 'PATIENT' | 'DOCTOR'
+import { Heart, UserCircle } from 'lucide-react'
 
 export default function RegisterPage() {
   const router = useRouter()
-  const [role, setRole] = useState<UserRole>('PATIENT')
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -36,12 +33,7 @@ export default function RegisterPage() {
     setLoading(true)
 
     try {
-      const endpoint =
-        role === 'PATIENT'
-          ? '/api/auth/register/patient'
-          : '/api/auth/register/doctor'
-
-      const response = await fetch(endpoint, {
+      const response = await fetch('/api/auth/register/patient', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -80,41 +72,12 @@ export default function RegisterPage() {
             <Heart className="h-10 w-10 text-indigo-600" />
             <span className="text-3xl font-bold text-gray-900">MediConnect</span>
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Create your account</h1>
-          <p className="text-gray-600">Join thousands of healthcare professionals and patients</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Create Patient Account</h1>
+          <p className="text-gray-600">Register to access your medical records and appointments</p>
         </div>
 
         <Card className="shadow-xl border-0">
-          <CardHeader className="space-y-4 pb-6">
-            <div className="flex gap-3 p-1 bg-gray-100 rounded-lg">
-              <button
-                type="button"
-                onClick={() => setRole('PATIENT')}
-                className={`flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-md font-medium transition-all ${
-                  role === 'PATIENT'
-                    ? 'bg-white text-indigo-600 shadow-sm'
-                    : 'text-gray-600 hover:text-gray-900'
-                }`}
-              >
-                <UserCircle className="h-5 w-5" />
-                Patient
-              </button>
-              <button
-                type="button"
-                onClick={() => setRole('DOCTOR')}
-                className={`flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-md font-medium transition-all ${
-                  role === 'DOCTOR'
-                    ? 'bg-white text-indigo-600 shadow-sm'
-                    : 'text-gray-600 hover:text-gray-900'
-                }`}
-              >
-                <Stethoscope className="h-5 w-5" />
-                Doctor
-              </button>
-            </div>
-          </CardHeader>
-
-          <CardContent>
+          <CardContent className="pt-6">
             <form onSubmit={handleSubmit} className="space-y-6">
               {error && (
                 <div className="rounded-lg bg-red-50 border border-red-200 p-3">
@@ -192,93 +155,44 @@ export default function RegisterPage() {
                 />
               </div>
 
-              {role === 'PATIENT' && (
-                <>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="dateOfBirth">Date of Birth</Label>
-                      <Input
-                        id="dateOfBirth"
-                        name="dateOfBirth"
-                        type="date"
-                        required
-                        value={formData.dateOfBirth}
-                        onChange={handleChange}
-                      />
-                    </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="dateOfBirth">Date of Birth</Label>
+                  <Input
+                    id="dateOfBirth"
+                    name="dateOfBirth"
+                    type="date"
+                    required
+                    value={formData.dateOfBirth}
+                    onChange={handleChange}
+                  />
+                </div>
 
-                    <div className="space-y-2">
-                      <Label htmlFor="bloodGroup">Blood Group (Optional)</Label>
-                      <Input
-                        id="bloodGroup"
-                        name="bloodGroup"
-                        type="text"
-                        placeholder="A+"
-                        value={formData.bloodGroup}
-                        onChange={handleChange}
-                      />
-                    </div>
-                  </div>
+                <div className="space-y-2">
+                  <Label htmlFor="bloodGroup">Blood Group (Optional)</Label>
+                  <Input
+                    id="bloodGroup"
+                    name="bloodGroup"
+                    type="text"
+                    placeholder="A+"
+                    value={formData.bloodGroup}
+                    onChange={handleChange}
+                  />
+                </div>
+              </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="address">Address</Label>
-                    <Input
-                      id="address"
-                      name="address"
-                      type="text"
-                      required
-                      placeholder="123 Main St, City, State ZIP"
-                      value={formData.address}
-                      onChange={handleChange}
-                    />
-                  </div>
-                </>
-              )}
-
-              {role === 'DOCTOR' && (
-                <>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="specialization">Specialization</Label>
-                      <Input
-                        id="specialization"
-                        name="specialization"
-                        type="text"
-                        required
-                        placeholder="Cardiologist"
-                        value={formData.specialization}
-                        onChange={handleChange}
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="department">Department</Label>
-                      <Input
-                        id="department"
-                        name="department"
-                        type="text"
-                        required
-                        placeholder="Cardiology"
-                        value={formData.department}
-                        onChange={handleChange}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="licenseNumber">Medical License Number</Label>
-                    <Input
-                      id="licenseNumber"
-                      name="licenseNumber"
-                      type="text"
-                      required
-                      placeholder="MD-12345"
-                      value={formData.licenseNumber}
-                      onChange={handleChange}
-                    />
-                  </div>
-                </>
-              )}
+              <div className="space-y-2">
+                <Label htmlFor="address">Address</Label>
+                <Input
+                  id="address"
+                  name="address"
+                  type="text"
+                  required
+                  placeholder="123 Main St, City, State ZIP"
+                  value={formData.address}
+                  onChange={handleChange}
+                />
+              </div>
 
               <Button
                 type="submit"

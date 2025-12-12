@@ -44,3 +44,4 @@ export type LoginInput = z.infer<typeof loginSchema>
 export type RegisterPatientInput = z.infer<typeof registerPatientSchema>
 export type RegisterDoctorInput = z.infer<typeof registerDoctorSchema>
 
+

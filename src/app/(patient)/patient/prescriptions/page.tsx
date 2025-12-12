@@ -1,13 +1,69 @@
-import { getSession } from '@/lib/utils/session'
-import { prescriptionService } from '@/lib/services/prescription.service'
+'use client'
+
+import { useEffect, useState } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
-import { Pill, User, Calendar } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Pill, User, Calendar, Download, FileText } from 'lucide-react'
+import { downloadPrescriptionPDF } from '@/lib/utils/pdf-generator'
 
-export default async function PatientPrescriptionsPage() {
-  const session = await getSession()
-  if (!session) return null
+interface Prescription {
+  id: string
+  medication: string
+  dosage: string
+  frequency: string
+  duration: string
+  instructions: string | null
+  fileUrl: string | null
+  createdAt: string
+  doctor: {
+    firstName: string
+    lastName: string
+    specialization: string
+  }
+}
 
-  const prescriptions = await prescriptionService.getPrescriptionsByPatient(session.profileId)
+export default function PatientPrescriptionsPage() {
+  const [prescriptions, setPrescriptions] = useState<Prescription[]>([])
+  const [patientName, setPatientName] = useState('')
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    fetchPrescriptions()
+  }, [])
+
+  const fetchPrescriptions = async () => {
+    try {
+      const response = await fetch('/api/prescriptions')
+      const data = await response.json()
+      
+      if (data.success) {
+        setPrescriptions(data.data)
+      }
+      
+      // Get patient name
+      const meResponse = await fetch('/api/auth/me')
+      const meData = await meResponse.json()
+      if (meData.success) {
+        setPatientName(`${meData.data.firstName} ${meData.data.lastName}`)
+      }
+    } catch (err) {
+      console.error('Failed to fetch prescriptions:', err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleDownload = (prescription: Prescription) => {
+    downloadPrescriptionPDF(prescription, patientName)
+  }
+
+  if (loading) {
+    return (
+      <div className="px-4 py-6 sm:px-0">
+        <p className="text-center text-gray-600">Loading...</p>
+      </div>
+    )
+  }
 
   return (
     <div className="px-4 py-6 sm:px-0">
@@ -47,6 +103,15 @@ export default async function PatientPrescriptionsPage() {
                           <span>{new Date(prescription.createdAt).toLocaleDateString()}</span>
                         </div>
                       </div>
+                      <Button
+                        onClick={() => handleDownload(prescription)}
+                        variant="outline"
+                        size="sm"
+                        className="flex items-center gap-2"
+                      >
+                        <Download className="h-4 w-4" />
+                        Download PDF
+                      </Button>
                     </div>
 
                     <div className="bg-gradient-to-br from-indigo-50 to-blue-50 rounded-lg p-4 space-y-3 border border-indigo-100">
@@ -72,6 +137,21 @@ export default async function PatientPrescriptionsPage() {
                         </div>
                       )}
                     </div>
+
+                    {prescription.fileUrl && (
+                      <div className="mt-4">
+                        <a
+                          href={prescription.fileUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center justify-center gap-2 p-3 bg-white hover:bg-gray-50 border border-indigo-200 rounded-lg transition-colors group"
+                        >
+                          <FileText className="h-5 w-5 text-indigo-600" />
+                          <span className="text-sm font-medium text-indigo-900">View Prescription Document</span>
+                          <Download className="h-4 w-4 text-indigo-600 group-hover:text-indigo-800" />
+                        </a>
+                      </div>
+                    )}
                   </div>
                 </div>
               </CardContent>
@@ -82,4 +162,5 @@ export default async function PatientPrescriptionsPage() {
     </div>
   )
 }
+
 

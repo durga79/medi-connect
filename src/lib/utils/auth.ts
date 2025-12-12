@@ -22,6 +22,8 @@ export function generateToken(user: AuthUser): string {
       email: user.email,
       role: user.role,
       profileId: user.profileId,
+      firstName: user.firstName,
+      lastName: user.lastName,
     },
     JWT_SECRET,
     { expiresIn: '7d' }
@@ -36,4 +38,5 @@ export function verifyToken(token: string): AuthUser | null {
     return null
   }
 }
+
 
